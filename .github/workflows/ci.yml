@@ -38,11 +38,6 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       # Étape 7 : Pousser l'image Docker
-      - name: Push Docker image for development
-        run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:dev-${{ env.TIMESTAMP }} ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:dev-${{ env.TIMESTAMP }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:latest
 
       - name: Push Docker image for production
         run: |
