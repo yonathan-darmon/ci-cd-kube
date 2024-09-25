@@ -24,20 +24,14 @@ jobs:
 
       # Étape 4 : Obtenir le timestamp pour les images de développement
       - name: Get current timestamp
-        if: github.ref == 'refs/heads/main'
         run: echo "TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)" >> $GITHUB_ENV
 
       # Étape 5 : Construire l'image Docker
-      - name: Build Docker image for development (branch main)
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:dev-${{ env.TIMESTAMP }} .
       
       - name: Build Docker image for production (tag)
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}${{ env.TIMESTAMP }} .
 
       # Étape 6 : Se connecter à Docker Hub
       - name: Log in to Docker Hub
@@ -45,17 +39,15 @@ jobs:
 
       # Étape 7 : Pousser l'image Docker
       - name: Push Docker image for development
-        if: github.ref == 'refs/heads/main'
         run: |
           docker tag ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:dev-${{ env.TIMESTAMP }} ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:dev-${{ env.TIMESTAMP }}
           docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:latest
 
       - name: Push Docker image for production
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}
+          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}${{ env.TIMESTAMP }}
 
       # Étape 8 : Envoyer des notifications Google Chat
       - name: Send notification to Google Chat on success
