@@ -54,7 +54,7 @@ func (m *MockStorage) AddObject(bucketName, objectName string, data io.Reader, c
 func (m *MockStorage) DeleteObject(bucketName, objectName string) error {
 	if m.DeleteObjectFunc != nil {
 		return m.DeleteObjectFunc(bucketName, objectName)
-	}
+	} 
 	return nil
 }
 
