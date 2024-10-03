@@ -40,7 +40,7 @@ jobs:
       - name: Push Docker image for production
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }}/my-s3-clone:latest
 
       # Étape 8 : Se connecter à Kubernetes
       - name: Set up kubeconfig
