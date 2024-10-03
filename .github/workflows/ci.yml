@@ -50,11 +50,14 @@ jobs:
           chmod 600 $HOME/.kube/config
 
       # Étape 9 : Appliquer les fichiers Kubernetes
+      - name: List files
+        run: ls -al
+
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f ./deployment.yaml
-          kubectl apply -f ./service.yaml
-          kubectl apply -f ./ingress.yaml
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
+          kubectl apply -f ingress.yaml
 
       # Étape 10 : Envoyer des notifications Google Chat
       - name: Send notification to Google Chat on success
