@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-s3-clone-deployment
+  name: my-s3-clone-yonathan
   labels:
     app: my-s3-clone
 spec:
