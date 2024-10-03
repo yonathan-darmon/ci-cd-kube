@@ -49,11 +49,12 @@ jobs:
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
-      # Étape 9 : Mettre à jour le déploiement Kubernetes
-      - name: Update Kubernetes deployment
+      # Étape 9 : Appliquer les fichiers Kubernetes
+      - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/my-s3-clone-deployment my-s3-clone-container=${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }} -n production-namespace-yonathan
-          kubectl rollout status deployment/my-s3-clone-deployment -n production-namespace-yonathan
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
+          kubectl apply -f ingress.yaml
 
       # Étape 10 : Envoyer des notifications Google Chat
       - name: Send notification to Google Chat on success
