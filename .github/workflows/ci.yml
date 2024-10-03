@@ -40,9 +40,8 @@ jobs:
       - name: Push Docker image for production
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          docker tag ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:dev-${{ env.TIMESTAMP }} ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:dev-${{ env.TIMESTAMP }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }}
+
       # Étape 8 : Se connecter à Kubernetes
       - name: Set up kubeconfig
         run: |
@@ -50,17 +49,21 @@ jobs:
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
-      # Étape 9 : Appliquer les fichiers Kubernetes
-      - name: List files
-        run: ls -al
+      # Étape 9 : Remplacer le tag d'image dans le fichier de déploiement
+      - name: Update image tag in deployment
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          sed -i "s|image: koobiak2/my-s3-clone:latest|image: koobiak2/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }}|g" deployment.yml
 
+      # Étape 10 : Appliquer les fichiers Kubernetes
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f deployment.yml
           kubectl apply -f service.yml
           kubectl apply -f ingress.yml
 
-      # Étape 10 : Envoyer des notifications Google Chat
+
+      # Étape 11 : Envoyer des notifications Google Chat
       - name: Send notification to Google Chat on success
         uses: julb/action-post-googlechat-message@v1
         with:
