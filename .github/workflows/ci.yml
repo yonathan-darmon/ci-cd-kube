@@ -27,24 +27,35 @@ jobs:
         run: echo "TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)" >> $GITHUB_ENV
 
       # Étape 5 : Construire l'image Docker
-      
       - name: Build Docker image for production (tag)
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}${{ env.TIMESTAMP }} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }} .
 
       # Étape 6 : Se connecter à Docker Hub
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       # Étape 7 : Pousser l'image Docker
-
       - name: Push Docker image for production
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}${{ env.TIMESTAMP }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }}
 
-      # Étape 8 : Envoyer des notifications Google Chat
+      # Étape 8 : Se connecter à Kubernetes
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube/
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      # Étape 9 : Mettre à jour le déploiement Kubernetes
+      - name: Update Kubernetes deployment
+        run: |
+          kubectl set image deployment/my-s3-clone-deployment my-s3-clone-container=${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }} -n production-namespace
+          kubectl rollout status deployment/my-s3-clone-deployment -n production-namespace
+
+      # Étape 10 : Envoyer des notifications Google Chat
       - name: Send notification to Google Chat on success
         uses: julb/action-post-googlechat-message@v1
         with:
