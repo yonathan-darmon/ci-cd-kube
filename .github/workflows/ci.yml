@@ -52,7 +52,7 @@ jobs:
       # Étape 9 : Mettre à jour le déploiement Kubernetes
       - name: Update Kubernetes deployment
         run: |
-          kubectl set image deployment/my-s3-clone-deployment my-s3-clone-container=${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }} -n production-namespace
+          kubectl set image deployment/my-s3-clone-deployment my-s3-clone-container=${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }} -n production-namespace-yonathan
           kubectl rollout status deployment/my-s3-clone-deployment -n production-namespace-yonathan
 
       # Étape 10 : Envoyer des notifications Google Chat
