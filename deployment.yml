@@ -19,6 +19,5 @@ spec:
       containers:
         - name: my-s3-clone
           image: koobiak2/my-s3-clone:latest
-          imagePullPolicy: Always
           ports:
             - containerPort: 9090
