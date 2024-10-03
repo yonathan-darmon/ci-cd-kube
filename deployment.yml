@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: my-s3-clone
-          image: yonathan-darmon/ci-cd-kube:latest
+          image: ${{ secrets.DOCKER_USERNAME }}/my-s3-clone:${TAG_NAME}-${{ env.TIMESTAMP }}
           imagePullPolicy: Always
           ports:
             - containerPort: 9090
