@@ -20,4 +20,4 @@ spec:
         - name: my-s3-clone
           image: koobiak2/my-s3-clone:latest
           ports:
-            - containerPort: 9090
+            - containerPort: 9595

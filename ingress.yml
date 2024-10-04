@@ -11,6 +11,6 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: my-s3-clone-service
+              name: my-s3-clone-service-yonathan
               port:
-                number: 9090
+                number: 9595
